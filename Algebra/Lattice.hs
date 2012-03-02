@@ -308,8 +308,29 @@ instance BooleanLattice Bool where
 -- Maybe
 --
 
-instance JoinSemiLattice (Maybe a) where
+-- These instances are equivalent to Algebra.Lattice.Lifted
 
+instance JoinSemiLattice a => JoinSemiLattice (Maybe a) where
+  join Nothing x = x
+  join x Nothing = x
+  join (Just x) (Just y) = Just $ join x y
+
+instance MeetSemiLattice a => MeetSemiLattice (Maybe a) where
+  meet Nothing x = Nothing
+  meet x Nothing = Nothing
+  meet (Just x) (Just y) = Just $ meet x y
+
+instance Lattice a => Lattice (Maybe a) where
+
+instance JoinSemiLattice a => BoundedJoinSemiLattice a where
+  bottom = Nothing
+
+instance BoundedMeetSemiLattice a => BoundedMeetSemiLattice a where
+  top = Just top 
+
+instance (JoinSemiLattice a, BoundedMeetSemiLattice a) => BoundedLattice a where
+
+-- TODO: more instances, also for lifted.
 
 -- | Implementation of Kleene fixed-point theorem <http://en.wikipedia.org/wiki/Kleene_fixed-point_theorem>.
 -- Assumes that the function is monotone and does not check if that is correct.
